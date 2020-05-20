@@ -1,6 +1,8 @@
 <template>
   <div class="oven">
-    <el-card class="card"></el-card>
+    <div >
+      <el-card class="card"></el-card>
+    </div>
   </div>
 </template>
 
