@@ -1,12 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Akiswan from '../views/Akiswan'
+import Home from '../views/Home'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    name: 'Akiswan',
+    component: Akiswan,
+    meta: {
+      title: '天鹅肉'
+    }
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: Home
   },
@@ -25,5 +34,11 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
+router.beforeEach((to, from, next) => {
+  /* 路由发生变化修改页面title */
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  next()
+})
 export default router
