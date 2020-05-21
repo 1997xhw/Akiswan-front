@@ -13,10 +13,13 @@
         <div>
           <div class="swan-title"><b>天鹅肉</b></div>
           <div class="swan-sign">
-            <div v-if="true">
+            <div v-if="visibleSignBt">
               <el-button type="text" @click.native="signin()">Login</el-button>
               <span> | </span>
               <el-button type="text" @click.native="signup()">Sign up</el-button>
+            </div>
+            <div v-else>
+              <span>{{this.nickName}}</span>
             </div>
 
           </div>
@@ -37,7 +40,7 @@
     </el-container>
     <div>
       <el-dialog title="Login" custom-class="swan-dialog"
-                 :visible.sync="visivleSignIn"
+                 :visible.sync="visibleSignIn"
                  width="50%" :modal="false"
                  top="200px"
       >
@@ -50,7 +53,7 @@
           </el-form-item>
           <el-form-item class="submit-bt">
             <span class="login-bt">
-              <el-button type="primary" @click="sunbmitInForm('inForm')">Login</el-button>
+              <el-button type="primary" @click="submitInForm('inForm')">Login</el-button>
             </span>
             <span>  | </span>
             <span class="signup-bt">
@@ -60,7 +63,7 @@
         </el-form>
       </el-dialog>
     </div>
-    <el-dialog title="注册" :visible.sync="visivleSignUp" custom-class="swan-dialog"
+    <el-dialog title="注册" :visible.sync="visibleSignUp" custom-class="swan-dialog"
                top="200px"
                width="50%" :modal="false"
     >
@@ -133,13 +136,15 @@ export default {
         Nickname: '',
         phone: ''
       },
-      visivleSignIn: false,
-      visivleSignUp: false,
-      activeName: 'window'
+      visibleSignIn: false,
+      visibleSignUp: false,
+      visibleSignBt: true,
+      activeName: 'window',
+      nickName: ''
     }
   },
   methods: {
-    sunbmitInForm (formName) {
+    submitInForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
@@ -161,8 +166,10 @@ export default {
             type: 'success'
           })
           window.sessionStorage.setItem('token', response.data.body.token)
-          window.sessionStorage.setItem('nickname', response.data.body.nickname)
-          this.visivleSignIn = !this.visivleSignIn
+          this.nickName = response.data.body.user.nickname
+          // window.sessionStorage.setItem('nickname', response.data.body.nickname)
+          this.checkToken()
+          this.visibleSignIn = !this.visibleSignIn
         } else {
           this.$notify.error({
             title: '错误',
@@ -174,17 +181,23 @@ export default {
       })
     },
     signin () {
-      this.visivleSignUp = this.visivleSignIn
-      this.visivleSignIn = !this.visivleSignIn
+      this.visibleSignUp = this.visibleSignIn
+      this.visibleSignIn = !this.visibleSignIn
     },
     signup () {
-      this.visivleSignIn = this.visivleSignUp
-      this.visivleSignUp = !this.visivleSignUp
+      this.visibleSignIn = this.visibleSignUp
+      this.visibleSignUp = !this.visibleSignUp
+    },
+    checkToken () {
+      if (window.sessionStorage.getItem('token')) {
+        this.visibleSignBt = false
+      }
     }
 
   },
   mounted () {
     this.getMeatList()
+    this.checkToken()
   },
   created () {
 
