@@ -12,8 +12,8 @@
                 <el-card shadow="hover">
                   <span class="meat-content">{{meat.content}}</span>
                   <span class="meat-status">
-                  <div style="font-size: 18px">{{meatStatus(meat.status)}}</div>
-                  <div style="font-size: 10px">{{meat.time | formatDate}}</div>
+                  <div class="statuss" >{{meatStatus(meat.status)}}</div>
+                  <div class="target" >{{meat.time | formatDate}}</div>
                 </span>
                 </el-card>
               </div>
@@ -69,9 +69,12 @@ export default {
     formatDate (time) {
       time = time * 1000
       const date = new Date(time)
-      console.log(new Date(time))
+      // console.log(new Date(time))
       return formatDate(date, 'yyyyMMdd')
     }
+  },
+  created () {
+    this.getMeatList()
   }
 }
 </script>

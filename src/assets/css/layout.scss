@@ -3,7 +3,8 @@
   margin: 0;
   //height: 100%;
 }
-.swan{
+
+.swan {
   background-color: #FFE202;
   height: 100%;
   width: 100%;
@@ -12,7 +13,65 @@
   left: 0;
 
 }
-.swan.el-container{
+.swan-dialog{
+  .el-dialog__title{
+    color: #707070;
+  }
+  .el-form-item.is-error .el-input__inner, .el-form-item.is-error .el-input__inner:focus, .el-form-item.is-error .el-textarea__inner, .el-form-item.is-error .el-textarea__inner:focus {
+    border-color: #F56C6C;
+    border-width: 3px;
+  }
+  .el-form-item__label {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .swan-input input.el-input__inner{
+    background-color: #EAEAEA;
+    color: #707070;
+    border-radius: 10px;
+    font-size: 30px;
+    height: 50px;
+    border-color: #EAEAEA;
+  }
+
+  .submit-bt {
+    .signup-bt{
+      font-size: 15px;
+      color: #707070;
+      .el-button--text {
+        color: #707070;
+      }
+    }
+    .login-bt{
+      margin-right: 10px;
+      .el-button.el-button--primary{
+        background-color: #FFFFFF;
+        border-color: #0eb5ea;
+        color: #0EB5EA;
+      }
+      .el-button{
+        font-size: 15px;
+        border-radius: 15px;
+        padding: 8px 20px;
+        border-width: 3px;
+        width: 80px;
+        text-align: center;
+        font-weight: bold;
+      }
+      .el-button:hover{
+        //.el-button--primary{
+        background-color: #0eb5ea;
+        border-color: #0eb5ea;
+        color: #FFFFFF;
+        //}
+      }
+    }
+
+  }
+}
+
+
+.swan.el-container {
   position: absolute;
   height: 100%;
   width: 100%;
@@ -20,104 +79,132 @@
   top: 0;
 }
 
-.swan-title{
+.swan-title {
   margin: 10px;
   float: left;
   font-size: 50px;
   color: #707070;
 }
-.swan-sign{
+
+.swan-sign {
   float: right;
   margin: 20px;
   font-size: 15px;
   color: #707070;
+
+  .el-button--text {
+    color: #707070;
+  }
+
+  .el-button--text:hover {
+    color: #FFFFFF;
+  }
 }
-.swan-signin{
+
+.swan-signin {
 
 }
-.swan-signup{
+
+.swan-signup {
 
 }
-.swan-tabs{
-height: 100%;
+
+.swan-tabs {
+  height: 100%;
   float: left;
-  .el-tabs{
+
+  .el-tabs {
     position: absolute;
     width: 100%;
     height: calc(100% - 100px);
-    .el-tabs__header{
+
+    .el-tabs__header {
       width: 50%;
       margin: 10px;
     }
-    .el-tabs__content{
+
+    .el-tabs__content {
       //height: 93%;
     }
-    .el-tabs__item{
+
+    .el-tabs__item {
       color: #FFFFFF;
       font-size: 30px;
       font-weight: bold;
       padding: 0 10px;
     }
-    .el-tabs__item.is-active{
+
+    .el-tabs__item.is-active {
       color: #0EB5EA;
     }
+
     .el-tabs__active-bar {
       background-color: transparent !important;
     }
+
     .el-tabs__nav-wrap::after {
       background-color: transparent !important;
     }
+
     //.el-tab-pane{
     //  height: calc(100vh - 100px - 60px);
     //}
   }
 
-  }
-.oven{
+}
+
+.oven {
   padding: 0;
   margin: 0;
   height: 100%;
   width: 100%;
   //background-color: #FFFFFF;
-  .card{
+  .card {
     padding-top: 10px;
     background-color: #FFFFFF;
     border-radius: 50px 50px 0 0;
     height: calc(100vh - 100px - 60px);
-    .el-card__body{
+
+    .el-card__body {
       padding: 0;
       height: 100%;
     }
   }
 }
-.window{
+
+.window {
   padding: 0;
   margin: 0;
   height: 100%;
   width: 100%;
 
-  .card{
-    padding-top: 10px;
+  .card {
+    padding-top: 30px;
     background-color: #FFFFFF;
     border-radius: 50px 50px 0 0;
     height: calc(100vh - 100px - 60px);
-    .el-card__body{
+
+    .el-card__body {
       padding: 0;
       height: 100%;
     }
   }
 
-  .swan-card{
+  .swan-card {
     min-height: 40px;
-    margin-top:20px;
-    .el-card{
-      width: 80%;
+    margin-top: 30px;
+
+    .el-card {
+      width: 70%;
       margin: 0 auto;
       border-radius: 30px;
       background-color: #0EB5EA;
+      @media screen and (max-width: 500px) {
+        width: 80%;
+      }
     }
 
-    .meat-content{
+    .meat-content {
       color: #FFFFFF;
       font-weight: bold;
       font-size: 35px;
@@ -126,23 +213,45 @@ height: 100%;
       margin-top: 20px;
       margin-bottom: 20px;
       margin-left: 20px;
+      @media screen and (max-width: 500px) {
+        font-size: 20px;
+        width: 60%;
+      }
     }
-    .meat-status{
+
+    .meat-status {
       color: #FFFFFF;
       font-weight: bold;
       font-size: 35px;
-      //width: 18%;
+      //width: 20%;
       float: right;
       margin: 20px;
       text-align: right;
+
+      .statuss {
+        font-size: 18px;
+        @media screen and (max-width: 500px) {
+          font-size: 15px;
+        }
+      }
+
+      .target {
+        font-size: 10px;
+        @media screen and (max-width: 500px) {
+          font-size: 5px;
+        }
+      }
     }
   }
 
+  .swan-input {
 
+  }
 
   .bg-purple-dark {
     background: #0EB5EA;
   }
+
   .grid-content {
     border-radius: 4px;
     min-height: 36px;
