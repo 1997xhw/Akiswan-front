@@ -13,9 +13,12 @@
         <div>
           <div class="swan-title"><b>天鹅肉</b></div>
           <div class="swan-sign">
-            <el-button type="text" @click.native="signin()">Login</el-button>
-            <span> | </span>
-            <el-button type="text" @click.native="signup()">Sign up</el-button>
+            <div v-if="true">
+              <el-button type="text" @click.native="signin()">Login</el-button>
+              <span> | </span>
+              <el-button type="text" @click.native="signup()">Sign up</el-button>
+            </div>
+
           </div>
         </div>
       </el-header>
@@ -77,12 +80,12 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
-        if (this.inForm.password.length < 6) {
-          callback(new Error('密码最小长度6位'))
-        }
-        if (this.inForm.password.length > 32) {
-          callback(new Error('密码最大长度32位'))
-        }
+        // if (this.inForm.password.length < 6) {
+        //   callback(new Error('密码最小长度6位'))
+        // }
+        // if (this.inForm.password.length > 32) {
+        //   callback(new Error('密码最大长度32位'))
+        // }
         callback()
       }
     }
@@ -90,12 +93,12 @@ export default {
       if (value === '') {
         callback(new Error('请输入用户名'))
       } else {
-        if (this.inForm.password.length < 3) {
-          callback(new Error('密码最小长度3位'))
-        }
-        if (this.inForm.password.length > 32) {
-          callback(new Error('密码最大长度32位'))
-        }
+        // if (this.inForm.password.length < 3) {
+        //   callback(new Error('密码最小长度3位'))
+        // }
+        // if (this.inForm.password.length > 32) {
+        //   callback(new Error('密码最大长度32位'))
+        // }
         callback()
       }
     }
@@ -139,11 +142,35 @@ export default {
     sunbmitInForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          // alert('submit!')
+          this.goLogin()
         } else {
           console.log('error submit!!')
           return false
         }
+      })
+    },
+    goLogin () {
+      console.log(this.inForm)
+      this.axios.post('user/token', this.inForm).then((response) => {
+        console.log(response)
+        if (response.data.msg === 'OK') {
+          this.$notify({
+            title: '成功',
+            message: '登陆成功',
+            type: 'success'
+          })
+          window.sessionStorage.setItem('token', response.data.body.token)
+          window.sessionStorage.setItem('nickname', response.data.body.nickname)
+          this.visivleSignIn = !this.visivleSignIn
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: response.data.msg
+          })
+        }
+      }).catch((response) => {
+        console.log(response)
       })
     },
     signin () {
@@ -157,10 +184,10 @@ export default {
 
   },
   mounted () {
-    // this.getMeatList()
+    this.getMeatList()
   },
   created () {
-    this.getMeatList()
+
   }
 }
 </script>
