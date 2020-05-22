@@ -5,6 +5,14 @@
     border-style: solid;
     border-color: #FFE202;
   }
+  .el-dropdown-link {
+    cursor: pointer;
+    color: #707070;
+    font-weight: bold;
+  }
+  .el-icon-arrow-down {
+    font-size: 12px;
+  }
 </style>
 <template>
   <div class="swan">
@@ -19,7 +27,14 @@
               <el-button type="text" @click.native="signup()">Sign up</el-button>
             </div>
             <div v-else>
-              <span>{{this.nickName}}</span>
+<!--              <span>{{this.nickName}}</span>-->
+              <el-dropdown @command="handleCommand">
+                <span class="el-dropdown-link">
+                  {{this.nickName}}</span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="a">登出</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
 
           </div>
@@ -46,7 +61,7 @@
       >
         <el-form :model="inForm" :rules="inRules" ref="inForm" class="swan-input">
           <el-form-item label="Username" prop="username">
-            <el-input  v-model="inForm.username"></el-input>
+            <el-input v-model="inForm.username"></el-input>
           </el-form-item>
           <el-form-item label="Password" prop="password">
             <el-input type="password" v-model="inForm.password"></el-input>
@@ -144,6 +159,12 @@ export default {
     }
   },
   methods: {
+    handleCommand (command) {
+      if (command === 'a') {
+        window.sessionStorage.removeItem('token')
+        this.visibleSignBt = true
+      }
+    },
     submitInForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
