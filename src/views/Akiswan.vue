@@ -15,6 +15,9 @@
   .el-icon-arrow-down {
     font-size: 12px;
   }
+  .geetest_holder.geetest_wind {
+    min-width: 200px;
+  }
 </style>
 <template>
   <div class="swan">
@@ -38,7 +41,6 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
-
           </div>
         </div>
       </el-header>
@@ -58,7 +60,7 @@
     <div>
       <el-dialog title="Login" custom-class="swan-dialog"
                  :visible.sync="visibleSignIn"
-                 width="50%" :modal="false"
+                 :modal="false"
                  top="200px"
                  :destroy-on-close="true"
       >
@@ -70,7 +72,9 @@
             <el-input type="password" v-model="inForm.password"></el-input>
           </el-form-item>
           <el-form-item label="验证">
-            <div id="captchaBox"></div>
+            <div class="capBox">
+              <div id="captchaBox"></div>
+            </div>
 <!--            <p id="wait" class="show">正在加载验证码....</p>-->
           </el-form-item>
           <el-form-item class="submit-bt">
@@ -87,8 +91,38 @@
     </div>
     <el-dialog title="注册" :visible.sync="visibleSignUp" custom-class="swan-dialog"
                top="200px"
-               width="50%" :modal="false"
+               :modal="false"
+               :destroy-on-close="true"
     >
+      <el-form :model="upForm" :rules="upRules" ref="upForm" class="swan-input">
+        <el-form-item label="Username" prop="username">
+          <el-input v-model="upForm.username"></el-input>
+        </el-form-item>
+        <el-form-item label="Nickname" prop="nickname">
+          <el-input v-model="upForm.nickname"></el-input>
+        </el-form-item>
+        <el-form-item label="Password" prop="password">
+          <el-input type="password" v-model="upForm.password"></el-input>
+        </el-form-item>
+        <el-form-item label="Re-Password" prop="checkpass">
+          <el-input type="password" v-model="upForm.checkpass"></el-input>
+        </el-form-item>
+        <el-form-item label="Phone" prop="phone" class="upFormPhone">
+          <el-input v-model="upForm.phone" size="medium "></el-input>
+          <span class="Captcha-bt">
+            <el-button type="primary" @click="sentCaptcha">验证码</el-button>
+          </span>
+        </el-form-item>
+        <el-form-item class="submit-bt">
+            <span class="create-bt">
+              <el-button type="primary" @click="submitupForm('upForm')">Create Account</el-button>
+            </span>
+          <span>  | </span>
+          <span class="signup-bt">
+            <el-button type="text" @click.native="signin()">Login</el-button>
+            </span>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -97,41 +131,59 @@
 import Oven from './oven'
 import Window from './window'
 import '../assets/js/gt.js'
+import { isvalidPhone } from '../assets/js/validate.js'
 
 export default {
   name: 'Akiswan',
   components: { Window, Oven },
   data () {
-    var validatePass = (rule, value, callback) => {
+    const validateNickName = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入昵称'))
+      } else {
+        callback()
+      }
+    }
+    const validatePassReg = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
-        // if (this.inForm.password.length < 6) {
-        //   callback(new Error('密码最小长度6位'))
-        // }
-        // if (this.inForm.password.length > 32) {
-        //   callback(new Error('密码最大长度32位'))
-        // }
+        if (this.inForm.password.length < 6) {
+          callback(new Error('密码最小长度6位'))
+        }
+        if (this.inForm.password.length > 32) {
+          callback(new Error('密码最大长度32位'))
+        }
         callback()
       }
     }
-    var validateName = (rule, value, callback) => {
+    const validatePhone = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('请输入电话号码'))
+      } else if (!isvalidPhone(value)) {
+        callback(new Error('请输入正确的11位手机号码'))
+      } else {
+        callback()
+      }
+    }
+    const validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        callback()
+      }
+    }
+    const validateName = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入用户名'))
       } else {
-        // if (this.inForm.password.length < 3) {
-        //   callback(new Error('密码最小长度3位'))
-        // }
-        // if (this.inForm.password.length > 32) {
-        //   callback(new Error('密码最大长度32位'))
-        // }
         callback()
       }
     }
-    var validatePass2 = (rule, value, callback) => {
+    const validatePassReg2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value !== this.ruleForm.pass) {
+      } else if (value !== this.upForm.password) {
         callback(new Error('两次输入密码不一致!'))
       } else {
         callback()
@@ -142,12 +194,33 @@ export default {
         username: '',
         password: ''
       },
+      upForm: {
+        username: '',
+        nickname: '',
+        password: '',
+        checkpass: '',
+        phone: ''
+      },
+      upRules: {
+        username: [
+          { validator: validateName, trigger: 'blur' }
+        ],
+        nickname: [
+          { validator: validateNickName, trigger: 'blur' }
+        ],
+        password: [
+          { validator: validatePassReg, trigger: 'blur' }
+        ],
+        checkpass: [
+          { validator: validatePassReg2, trigger: 'blur' }
+        ],
+        phone: [
+          { validator: validatePhone, trigger: 'blur' }
+        ]
+      },
       inRules: {
         password: [
           { validator: validatePass, trigger: 'blur' }
-        ],
-        checkPass: [
-          { validator: validatePass2, trigger: 'blur' }
         ],
         username: [
           { validator: validateName, trigger: 'blur' }
@@ -165,6 +238,7 @@ export default {
       activeName: 'window',
       nickName: '',
       validResult: [],
+      validRegResult: [],
       geetestStatus: false
     }
   },
@@ -176,6 +250,22 @@ export default {
       }
     },
     submitInForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // alert('submit!')
+          console.log(this.validRegResult.length === 0)
+          if (this.validRegResult.length !== 0) {
+            this.axiosValidate()
+          } else {
+            return alert('请完成验证')
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    submitupForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
@@ -191,6 +281,39 @@ export default {
         }
       })
     },
+    getGeetestReg () {
+      this.axios.get('base/geetest/getcaptcha').then(res => {
+        const data = res.data
+        // eslint-disable-next-line no-undef
+        initGeetest({
+          // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: true,
+          product: 'bind',
+          width: '200px'
+        },
+        (captchaObj) => {
+          // 这里可以调用验证实例 captchaObj 的实例方法
+          // captchaObj.appendTo('#captchaPhoneBox')
+          captchaObj.onReady(() => {
+            captchaObj.verify()
+          }).onSuccess(() => {
+            this.validResult = captchaObj.getValidate()
+            // console.log(this)
+          }).onError(() => {
+            // your code
+          })
+          // captchaObj.verify(); //显示验证码
+        })
+      })
+        .catch(error => {
+          console.log(
+            error
+          )
+        })
+    },
     getGeetest () {
       this.axios.get('base/geetest/getcaptcha').then(res => {
         const data = res.data
@@ -202,7 +325,7 @@ export default {
           offline: !data.success,
           new_captcha: true,
           product: 'float',
-          width: '100%'
+          width: '200px'
         },
         (captchaObj) => {
           // 这里可以调用验证实例 captchaObj 的实例方法
@@ -210,7 +333,7 @@ export default {
           captchaObj.onReady(() => {
 
           }).onSuccess(() => {
-            this.validResult = captchaObj.getValidate()
+            this.validRResult = captchaObj.getValidate()
             // console.log(this)
           }).onError(() => {
             // your code
@@ -223,12 +346,12 @@ export default {
           )
         })
     },
-    axiosValidate () {
+    axiosValidate (type) {
       // eslint-disable-next-line no-undef
       this.axios.post('base/geetest/axiosvalidate', this.validResult).then(res => {
         this.geetestStatus = res.data.status
         if (this.geetestStatus) {
-          this.goLogin()
+          if (type === 'login') { this.goLogin() } else if (type === 'create') { this.goSingUp() }
         } else {
           this.$notify.error({
             title: 'error',
@@ -260,6 +383,15 @@ export default {
         }
       }).catch((response) => {
         console.log(response)
+      })
+    },
+    sentCaptcha () {
+      this.$refs.upForm.validateField('phone', (valid) => {
+        if (!valid) {
+          this.getGeetestReg()
+        } else {
+          return false
+        }
       })
     },
     signin () {
