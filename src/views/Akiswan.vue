@@ -5,11 +5,13 @@
     border-style: solid;
     border-color: #FFE202;
   }
+
   .el-dropdown-link {
     cursor: pointer;
     color: #707070;
     font-weight: bold;
   }
+
   .el-icon-arrow-down {
     font-size: 12px;
   }
@@ -27,7 +29,7 @@
               <el-button type="text" @click.native="signup()">Sign up</el-button>
             </div>
             <div v-else>
-<!--              <span>{{this.nickName}}</span>-->
+              <!--              <span>{{this.nickName}}</span>-->
               <el-dropdown @command="handleCommand">
                 <span class="el-dropdown-link">
                   {{this.nickName}}</span>
@@ -58,6 +60,7 @@
                  :visible.sync="visibleSignIn"
                  width="50%" :modal="false"
                  top="200px"
+                 :destroy-on-close="true"
       >
         <el-form :model="inForm" :rules="inRules" ref="inForm" class="swan-input">
           <el-form-item label="Username" prop="username">
@@ -65,6 +68,10 @@
           </el-form-item>
           <el-form-item label="Password" prop="password">
             <el-input type="password" v-model="inForm.password"></el-input>
+          </el-form-item>
+          <el-form-item label="验证">
+            <div id="captchaBox"></div>
+<!--            <p id="wait" class="show">正在加载验证码....</p>-->
           </el-form-item>
           <el-form-item class="submit-bt">
             <span class="login-bt">
@@ -89,6 +96,7 @@
 <script>
 import Oven from './oven'
 import Window from './window'
+import '../assets/js/gt.js'
 
 export default {
   name: 'Akiswan',
@@ -155,7 +163,9 @@ export default {
       visibleSignUp: false,
       visibleSignBt: true,
       activeName: 'window',
-      nickName: ''
+      nickName: '',
+      validResult: [],
+      geetestStatus: false
     }
   },
   methods: {
@@ -169,10 +179,61 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
-          this.goLogin()
+          console.log(this.validResult.length === 0)
+          if (this.validResult.length !== 0) {
+            this.axiosValidate()
+          } else {
+            return alert('请完成验证')
+          }
         } else {
           console.log('error submit!!')
           return false
+        }
+      })
+    },
+    getGeetest () {
+      this.axios.get('base/geetest/getcaptcha').then(res => {
+        const data = res.data
+        // eslint-disable-next-line no-undef
+        initGeetest({
+          // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: true,
+          product: 'float',
+          width: '100%'
+        },
+        (captchaObj) => {
+          // 这里可以调用验证实例 captchaObj 的实例方法
+          captchaObj.appendTo('#captchaBox')
+          captchaObj.onReady(() => {
+
+          }).onSuccess(() => {
+            this.validResult = captchaObj.getValidate()
+            // console.log(this)
+          }).onError(() => {
+            // your code
+          })
+        })
+      })
+        .catch(error => {
+          console.log(
+            error
+          )
+        })
+    },
+    axiosValidate () {
+      // eslint-disable-next-line no-undef
+      this.axios.post('base/geetest/axiosvalidate', this.validResult).then(res => {
+        this.geetestStatus = res.data.status
+        if (this.geetestStatus) {
+          this.goLogin()
+        } else {
+          this.$notify.error({
+            title: 'error',
+            message: '验证错误稍后再试'
+          })
         }
       })
     },
@@ -204,6 +265,7 @@ export default {
     signin () {
       this.visibleSignUp = this.visibleSignIn
       this.visibleSignIn = !this.visibleSignIn
+      this.getGeetest()
     },
     signup () {
       this.visibleSignIn = this.visibleSignUp
