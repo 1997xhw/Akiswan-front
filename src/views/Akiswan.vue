@@ -65,7 +65,7 @@
                  :destroy-on-close="true"
       >
         <el-form :model="inForm" :rules="inRules" ref="inForm" class="swan-input">
-          <el-form-item label="Username" prop="username">
+          <el-form-item label="Name" prop="username">
             <el-input v-model="inForm.username"></el-input>
           </el-form-item>
           <el-form-item label="Password" prop="password">
@@ -95,7 +95,7 @@
                :destroy-on-close="true"
     >
       <el-form :model="upForm" :rules="upRules" ref="upForm" class="swan-input">
-        <el-form-item label="Username" prop="username">
+        <el-form-item label="Name" prop="username">
           <el-input v-model="upForm.username"></el-input>
         </el-form-item>
         <el-form-item label="Nickname" prop="nickname">
@@ -104,13 +104,17 @@
         <el-form-item label="Password" prop="password">
           <el-input type="password" v-model="upForm.password"></el-input>
         </el-form-item>
-        <el-form-item label="Re-Password" prop="checkpass">
+        <el-form-item label="Confirm Password" prop="checkpass">
           <el-input type="password" v-model="upForm.checkpass"></el-input>
         </el-form-item>
         <el-form-item label="Phone" prop="phone" class="upFormPhone">
           <el-input v-model="upForm.phone" size="medium "></el-input>
+          <el-input v-model="upForm.code" size="medium" placeholder="验证码" style="width: 40%"></el-input>
           <span class="Captcha-bt">
-            <el-button type="primary" @click="sentCaptcha">验证码</el-button>
+            <el-button type="primary" @click="sentCaptcha">
+              <span v-show="capButtonShow">验证码</span>
+              <span v-show="!capButtonShow">{{count}} s</span>
+            </el-button>
           </span>
         </el-form-item>
         <el-form-item class="submit-bt">
@@ -148,10 +152,10 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'))
       } else {
-        if (this.inForm.password.length < 6) {
+        if (this.upForm.password.length < 6) {
           callback(new Error('密码最小长度6位'))
         }
-        if (this.inForm.password.length > 32) {
+        if (this.upForm.password.length > 32) {
           callback(new Error('密码最大长度32位'))
         }
         callback()
@@ -199,7 +203,8 @@ export default {
         nickname: '',
         password: '',
         checkpass: '',
-        phone: ''
+        phone: '',
+        code: ''
       },
       upRules: {
         username: [
@@ -239,7 +244,11 @@ export default {
       nickName: '',
       validResult: [],
       validRegResult: [],
-      geetestStatus: false
+      geetestStatus: false,
+      // 验证码按钮
+      capButtonShow: true,
+      count: '',
+      timber: null
     }
   },
   methods: {
@@ -253,9 +262,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
-          console.log(this.validRegResult.length === 0)
-          if (this.validRegResult.length !== 0) {
-            this.axiosValidate()
+          console.log(this.validResult)
+          if (this.validResult.length !== 0) {
+            this.axiosValidate('login')
           } else {
             return alert('请完成验证')
           }
@@ -269,9 +278,10 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
-          console.log(this.validResult.length === 0)
-          if (this.validResult.length !== 0) {
-            this.axiosValidate()
+          console.log(this.validRegResult.length === 0)
+          if (this.validRegResult.length !== 0) {
+            // this.axiosValidate('create')
+            this.goSignup()
           } else {
             return alert('请完成验证')
           }
@@ -301,11 +311,10 @@ export default {
             captchaObj.verify()
           }).onSuccess(() => {
             this.validResult = captchaObj.getValidate()
-            // console.log(this)
+            console.log(this.validResult)
+            this.axiosValidate('create')
           }).onError(() => {
-            // your code
           })
-          // captchaObj.verify(); //显示验证码
         })
       })
         .catch(error => {
@@ -333,7 +342,7 @@ export default {
           captchaObj.onReady(() => {
 
           }).onSuccess(() => {
-            this.validRResult = captchaObj.getValidate()
+            this.validResult = captchaObj.getValidate()
             // console.log(this)
           }).onError(() => {
             // your code
@@ -351,11 +360,31 @@ export default {
       this.axios.post('base/geetest/axiosvalidate', this.validResult).then(res => {
         this.geetestStatus = res.data.status
         if (this.geetestStatus) {
-          if (type === 'login') { this.goLogin() } else if (type === 'create') { this.goSingUp() }
+          if (type === 'login') { this.goLogin() } else if (type === 'create') { this.registerCaptchaPhone() }
         } else {
           this.$notify.error({
             title: 'error',
             message: '验证错误稍后再试'
+          })
+        }
+      })
+    },
+    goSignup () {
+      console.log(this.upForm)
+      this.axios.post('user/', this.upForm).then((response) => {
+        console.log(response)
+        if (response.data.msg === 'OK') {
+          this.$notify({
+            title: '成功',
+            message: '注册成功',
+            type: 'success'
+          })
+          this.signin()
+        } else {
+          this.$notify({
+            title: '失败',
+            message: '注册失败',
+            type: 'error'
           })
         }
       })
@@ -385,6 +414,40 @@ export default {
         console.log(response)
       })
     },
+    registerCaptchaPhone () {
+      // eslint-disable-next-line no-unused-vars
+      const phoneReg = {
+        phone: this.upForm.phone
+      }
+      this.axios.post('user/registerCaptcha', phoneReg).then((res) => {
+        console.log(res)
+        if (res.data.body.send) {
+          this.$notify.success({
+            title: 'yes！',
+            message: res.data.body.toast_msg
+          })
+          const TIME_COUNT = 60 // 更改倒计时时间
+          if (!this.timer) {
+            this.count = TIME_COUNT
+            this.capButtonShow = false
+            this.timer = setInterval(() => {
+              if (this.count > 0 && this.count <= TIME_COUNT) {
+                this.count--
+              } else {
+                this.capButtonShow = true
+                clearInterval(this.timer) // 清除定时器
+                this.timer = null
+              }
+            }, 1000)
+          }
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: res.data.body.toast_msg
+          })
+        }
+      })
+    },
     sentCaptcha () {
       this.$refs.upForm.validateField('phone', (valid) => {
         if (!valid) {
@@ -397,6 +460,7 @@ export default {
     signin () {
       this.visibleSignUp = this.visibleSignIn
       this.visibleSignIn = !this.visibleSignIn
+      this.geetestStatus = false
       this.getGeetest()
     },
     signup () {

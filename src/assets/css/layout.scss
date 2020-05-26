@@ -23,9 +23,11 @@
   .swan-input {
     .Captcha-bt {
       margin-left: 10px;
+      //margin-top: 5px;
       //margin-bottom: 10px;
       position: relative;
-      //top: -1px;
+      top: -1px;
+
       .el-button.el-button--primary {
         background-color: #FFFFFF;
         border-color: #0eb5ea;
@@ -52,8 +54,11 @@
     }
 
     .upFormPhone {
+      .el-input__inner{
+        font-size: 20px;
+      }
       .el-input {
-        width: 70%;
+        width: 80%;
       }
 
       .el-form-item__label {
