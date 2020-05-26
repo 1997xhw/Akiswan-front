@@ -88,6 +88,7 @@ export default {
       }
     }
     return {
+      geetestStatus: false,
       visibleCreate: false,
       meatList: [],
       createMeatForm: {
@@ -129,8 +130,89 @@ export default {
           }
         })
     },
+    getGeetest () {
+      this.axios.get('base/geetest/getcaptcha').then(res => {
+        const data = res.data
+        // eslint-disable-next-line no-undef
+        initGeetest({
+          // 以下配置参数来自服务端 SDK
+          gt: data.gt,
+          challenge: data.challenge,
+          offline: !data.success,
+          new_captcha: true,
+          product: 'bind',
+          width: '200px'
+        },
+        (captchaObj) => {
+          // 这里可以调用验证实例 captchaObj 的实例方法
+          // captchaObj.appendTo('#captchaPhoneBox')
+          captchaObj.onReady(() => {
+            captchaObj.verify()
+          }).onSuccess(() => {
+            this.validResult = captchaObj.getValidate()
+            console.log(this.validResult)
+            this.axiosValidate()
+          }).onError(() => {
+          })
+        })
+      })
+        .catch(error => {
+          console.log(
+            error
+          )
+        })
+    },
+    axiosValidate () {
+      // eslint-disable-next-line no-undef
+      this.axios.post('base/geetest/axiosvalidate', this.validResult).then(res => {
+        this.geetestStatus = res.data.status
+        if (this.geetestStatus) {
+          this.pushMest()
+        } else {
+          this.$notify.error({
+            title: 'error',
+            message: '验证错误稍后再试'
+          })
+        }
+      })
+    },
+    pushMest () {
+      console.log(this.createMeatForm)
+      this.axios.post('meat/create', this.createMeatForm).then(response => {
+        console.log(response)
+        if (response.data.msg === 'OK') {
+          this.$notify({
+            title: '成功',
+            message: '成功塞进烤箱啦！',
+            type: 'success'
+          })
+          this.visibleCreate = false
+          this.getMeatList()
+        } else {
+          if (response.data.identifier === 'MEAT_QUANTITY') {
+            this.$notify({
+              title: '失败',
+              message: '宝贝 事不过三哦~~',
+              type: 'error'
+            })
+          } else {
+            this.$notify({
+              title: '失败',
+              message: response.data.msg,
+              type: 'error'
+            })
+          }
+        }
+      })
+    },
     submitMeatForm () {
-
+      this.$refs.createMeatForm.validate((valid) => {
+        if (valid) {
+          this.getGeetest()
+        } else {
+          return false
+        }
+      })
     }
   },
   watch: {
