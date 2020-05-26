@@ -29,6 +29,19 @@
   }
 
   .swan-input {
+    .el-switch.is-checked .el-switch__core{
+      border-color: #0EB5EA;
+      background-color: #0EB5EA;
+    }
+    .target-time {
+      .el-input__inner {
+        background-color: #EAEAEA;
+        color: #707070;
+        border-radius: 10px;
+        font-size: 17px;
+        border-color: #EAEAEA;
+      }
+    }
     .Captcha-bt {
       margin-left: 10px;
       //margin-top: 5px;
@@ -100,16 +113,18 @@
     //}
     font-weight: bold;
   }
-
   .swan-input input.el-input__inner {
     background-color: #EAEAEA;
     color: #707070;
     border-radius: 10px;
     font-size: 30px;
-    //@media screen and (max-width: 500px) {
-    //  font-size: 10px;
-    //}
-    //height: 50px;
+    border-color: #EAEAEA;
+  }
+  .el-textarea__inner {
+    background-color: #EAEAEA;
+    color: #707070;
+    border-radius: 10px;
+    font-size: 20px;
     border-color: #EAEAEA;
   }
 
@@ -270,7 +285,13 @@
   margin: 0;
   height: 100%;
   width: 100%;
-
+  z-index: 1;
+  .creatMeatButton{
+    position: fixed;
+    top: 80px;
+    left: calc(50vw - 40px);
+    z-index: 10;
+  }
   .card {
     padding-top: 30px;
     background-color: #FFFFFF;
