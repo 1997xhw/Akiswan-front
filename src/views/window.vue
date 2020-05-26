@@ -45,14 +45,13 @@ export default {
       if (status === 3) return '下次一定'
     },
     getMeatList () {
-      const vm = this
       this.axios
         .get('meat/pool')
         .then(response => {
           if (response.data.msg === 'OK') {
             // console.log(response.data)
-            vm.meatList = response.data.body
-            console.log(vm.meatList)
+            this.meatList = response.data.body
+            console.log(this.meatList)
           }
         })
     }
@@ -60,7 +59,7 @@ export default {
   watch: {
     activeName (value) {
       if (value === 'window') {
-        console.log('window')
+        // console.log('window')
         this.getMeatList()
       }
     }
@@ -74,6 +73,8 @@ export default {
     }
   },
   created () {
+  },
+  mounted () {
     this.getMeatList()
   }
 }

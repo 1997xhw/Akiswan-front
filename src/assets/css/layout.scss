@@ -12,6 +12,14 @@
   top: 0;
   left: 0;
 
+  .el-dropdown-menu__item {
+    line-height: 20px;
+    font-size: 14px;
+    color: #606266;
+  }
+  .el-dropdown-menu__item:focus {
+    color: transparent;
+  }
 }
 
 .swan-dialog {
@@ -54,9 +62,10 @@
     }
 
     .upFormPhone {
-      .el-input__inner{
+      .el-input__inner {
         font-size: 20px;
       }
+
       .el-input {
         width: 80%;
       }
@@ -113,7 +122,8 @@
         color: #707070;
       }
     }
-    .create-bt{
+
+    .create-bt {
       margin-right: 10px;
 
       .el-button.el-button--primary {
@@ -140,6 +150,7 @@
         //}
       }
     }
+
     .login-bt {
       margin-right: 10px;
 
@@ -259,9 +270,9 @@
   margin: 0;
   height: 100%;
   width: 100%;
-  //background-color: #FFFFFF;
+
   .card {
-    padding-top: 10px;
+    padding-top: 30px;
     background-color: #FFFFFF;
     border-radius: 50px 50px 0 0;
     height: calc(100vh - 100px - 60px);
@@ -269,6 +280,60 @@
     .el-card__body {
       padding: 0;
       height: 100%;
+    }
+  }
+
+  .swan-card {
+    min-height: 40px;
+    margin-top: 30px;
+
+    .el-card {
+      width: 70%;
+      margin: 0 auto;
+      border-radius: 30px;
+      background-color: #0EB5EA;
+      @media screen and (max-width: 500px) {
+        width: 80%;
+      }
+    }
+
+    .meat-content {
+      color: #FFFFFF;
+      font-weight: bold;
+      font-size: 35px;
+      float: left;
+      width: 70%;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      margin-left: 20px;
+      @media screen and (max-width: 500px) {
+        font-size: 20px;
+        width: 60%;
+      }
+    }
+
+    .meat-status {
+      color: #FFFFFF;
+      font-weight: bold;
+      font-size: 35px;
+      //width: 20%;
+      float: right;
+      margin: 20px;
+      text-align: right;
+
+      .statuss {
+        font-size: 18px;
+        @media screen and (max-width: 500px) {
+          font-size: 15px;
+        }
+      }
+
+      .target {
+        font-size: 10px;
+        @media screen and (max-width: 500px) {
+          font-size: 5px;
+        }
+      }
     }
   }
 }
@@ -343,15 +408,5 @@
         }
       }
     }
-  }
-
-
-  .bg-purple-dark {
-    background: #0EB5EA;
-  }
-
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
   }
 }

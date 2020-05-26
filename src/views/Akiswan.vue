@@ -27,12 +27,11 @@
           <div class="swan-title"><b>天鹅肉</b></div>
           <div class="swan-sign">
             <div v-if="visibleSignBt">
-              <el-button type="text" @click.native="signin()">Login</el-button>
+              <el-button type="text" @click.native="signin()">Log in</el-button>
               <span> | </span>
               <el-button type="text" @click.native="signup()">Sign up</el-button>
             </div>
             <div v-else>
-              <!--              <span>{{this.nickName}}</span>-->
               <el-dropdown @command="handleCommand">
                 <span class="el-dropdown-link">
                   {{this.nickName}}</span>
@@ -46,7 +45,7 @@
       </el-header>
       <el-main style="padding: 0">
         <div class="swan-tabs">
-          <el-tabs v-model="activeName">
+          <el-tabs v-model="activeName" :before-leave="beforeLeave">
             <el-tab-pane label="烤箱" name="oven">
               <oven :activeName="activeName"></oven>
             </el-tab-pane>
@@ -58,7 +57,7 @@
       </el-main>
     </el-container>
     <div>
-      <el-dialog title="Login" custom-class="swan-dialog"
+      <el-dialog title="Log in" custom-class="swan-dialog"
                  :visible.sync="visibleSignIn"
                  :modal="false"
                  top="200px"
@@ -71,15 +70,15 @@
           <el-form-item label="Password" prop="password">
             <el-input type="password" v-model="inForm.password"></el-input>
           </el-form-item>
-          <el-form-item label="验证">
+          <el-form-item >
             <div class="capBox">
-              <div id="captchaBox"></div>
+              <div id="captchaBox" style="min-width: 200px"></div>
             </div>
 <!--            <p id="wait" class="show">正在加载验证码....</p>-->
           </el-form-item>
           <el-form-item class="submit-bt">
             <span class="login-bt">
-              <el-button type="primary" @click="submitInForm('inForm')">Login</el-button>
+              <el-button type="primary" @click="submitInForm('inForm')">Log in</el-button>
             </span>
             <span>  | </span>
             <span class="signup-bt">
@@ -89,7 +88,7 @@
         </el-form>
       </el-dialog>
     </div>
-    <el-dialog title="注册" :visible.sync="visibleSignUp" custom-class="swan-dialog"
+    <el-dialog title="Sign up" :visible.sync="visibleSignUp" custom-class="swan-dialog"
                top="200px"
                :modal="false"
                :destroy-on-close="true"
@@ -123,7 +122,7 @@
             </span>
           <span>  | </span>
           <span class="signup-bt">
-            <el-button type="text" @click.native="signin()">Login</el-button>
+            <el-button type="text" @click.native="signin()">Log in</el-button>
             </span>
         </el-form-item>
       </el-form>
@@ -252,6 +251,19 @@ export default {
     }
   },
   methods: {
+    beforeLeave (activeName, oldActiveName) {
+      console.log(activeName, oldActiveName)
+      if (activeName === 'oven') {
+        if (!window.sessionStorage.getItem('token')) {
+          this.$notify({
+            title: '',
+            message: '请先登录哦',
+            type: 'warning'
+          })
+          return false
+        }
+      }
+    },
     handleCommand (command) {
       if (command === 'a') {
         window.sessionStorage.removeItem('token')
@@ -334,7 +346,7 @@ export default {
           offline: !data.success,
           new_captcha: true,
           product: 'float',
-          width: '200px'
+          width: '100px'
         },
         (captchaObj) => {
           // 这里可以调用验证实例 captchaObj 的实例方法
@@ -405,10 +417,19 @@ export default {
           this.checkToken()
           this.visibleSignIn = !this.visibleSignIn
         } else {
-          this.$notify.error({
-            title: '错误',
-            message: response.data.msg
-          })
+          if (response.data.identifier === 'PASSWORD') {
+            this.$notify.error({
+              title: '错误',
+              // message: response.data.msg
+              message: '密码错误,请重试'
+            })
+          } else {
+            this.$notify.error({
+              title: '错误',
+              // message: response.data.msg
+              message: '账户不存在,请重试'
+            })
+          }
         }
       }).catch((response) => {
         console.log(response)
@@ -475,7 +496,6 @@ export default {
 
   },
   mounted () {
-    this.getMeatList()
     this.checkToken()
   },
   created () {
