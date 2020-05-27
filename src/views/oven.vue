@@ -19,6 +19,13 @@
                   <div class="target" >{{meat.time | formatDate}}</div>
                 </span>
                 </el-card>
+<!--                <el-dropdown class="meatStatusDrop" v-if="meat.status == 1">-->
+<!--                  <img src="../assets/pic/餐盘@2x.png">-->
+<!--                  <el-dropdown-menu slot="dropdown">-->
+<!--                    <el-dropdown-item>吃到了</el-dropdown-item>-->
+<!--                    <el-dropdown-item>下次一定</el-dropdown-item>-->
+<!--                  </el-dropdown-menu>-->
+<!--                </el-dropdown>-->
               </div>
 
             </el-col>

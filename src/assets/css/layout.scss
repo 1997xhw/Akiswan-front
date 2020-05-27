@@ -307,7 +307,13 @@
   .swan-card {
     min-height: 40px;
     margin-top: 30px;
+    .meatStatusDrop{
 
+      .el-dropdown-link {
+        cursor: pointer;
+        color: #409EFF;
+      }
+    }
     .el-card {
       width: 70%;
       margin: 0 auto;
