@@ -1,6 +1,6 @@
 <template>
   <div class="oven">
-    <div >
+    <div>
       <div class="creatMeatButton">
         <el-button type="text" @click.native="dialogCreate"><img src="../assets/pic/Button.png"></el-button>
       </div>
@@ -15,17 +15,19 @@
                 <el-card shadow="hover">
                   <span class="meat-content">{{meat.content}}</span>
                   <span class="meat-status">
-                  <div class="statuss" >{{meatStatus(meat.status)}}</div>
-                  <div class="target" >{{meat.time | formatDate}}</div>
+                  <div class="statuss">{{meatStatus(meat.status)}}</div>
+                  <div class="target">{{meat.time | formatDate}}</div>
+                  <div class="meatStatusDrop">
+                    <el-dropdown v-if="meat.status === 1">
+                      <img src="../assets/pic/dish.png" style="width: 40px">
+                      <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item>吃到了</el-dropdown-item>
+                      <el-dropdown-item>下次一定</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
                 </span>
                 </el-card>
-<!--                <el-dropdown class="meatStatusDrop" v-if="meat.status == 1">-->
-<!--                  <img src="../assets/pic/餐盘@2x.png">-->
-<!--                  <el-dropdown-menu slot="dropdown">-->
-<!--                    <el-dropdown-item>吃到了</el-dropdown-item>-->
-<!--                    <el-dropdown-item>下次一定</el-dropdown-item>-->
-<!--                  </el-dropdown-menu>-->
-<!--                </el-dropdown>-->
               </div>
 
             </el-col>
@@ -57,8 +59,9 @@
         <el-form-item label="短信提醒" prop="notification">
           <el-switch
             v-model="createMeatForm.notification"
-            >
-          </el-switch><span v-if="createMeatForm.notification" style="font-size: 7px; font-weight: bold">  技术原因待开发</span>
+          >
+          </el-switch>
+          <span v-if="createMeatForm.notification" style="font-size: 7px; font-weight: bold">  技术原因待开发</span>
         </el-form-item>
         <el-form-item class="submit-bt">
           <span class="login-bt">

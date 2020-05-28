@@ -267,6 +267,7 @@ export default {
     handleCommand (command) {
       if (command === 'a') {
         window.sessionStorage.removeItem('token')
+        window.sessionStorage.removeItem('nickname')
         this.visibleSignBt = true
       }
     },
@@ -412,8 +413,9 @@ export default {
             type: 'success'
           })
           window.sessionStorage.setItem('token', response.data.body.token)
+          // window.sessionStorage.setItem('nickname', response.data.body.token)
           this.nickName = response.data.body.user.nickname
-          // window.sessionStorage.setItem('nickname', response.data.body.nickname)
+          window.sessionStorage.setItem('nickname', response.data.body.nickname)
           this.checkToken()
           this.visibleSignIn = !this.visibleSignIn
         } else {
@@ -489,8 +491,12 @@ export default {
       this.visibleSignUp = !this.visibleSignUp
     },
     checkToken () {
+      // console.log(window.sessionStorage.getItem('token'))
       if (window.sessionStorage.getItem('token')) {
         this.visibleSignBt = false
+        this.nickName = window.sessionStorage.getItem('nickname')
+      } else {
+        this.visibleSignBt = true
       }
     }
 
