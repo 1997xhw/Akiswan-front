@@ -415,7 +415,7 @@ export default {
           window.sessionStorage.setItem('token', response.data.body.token)
           // window.sessionStorage.setItem('nickname', response.data.body.token)
           this.nickName = response.data.body.user.nickname
-          window.sessionStorage.setItem('nickname', response.data.body.nickname)
+          window.sessionStorage.setItem('nickname', response.data.body.user.nickname)
           this.checkToken()
           this.visibleSignIn = !this.visibleSignIn
         } else {

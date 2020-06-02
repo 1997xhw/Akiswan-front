@@ -18,11 +18,11 @@
                   <div class="statuss">{{meatStatus(meat.status)}}</div>
                   <div class="target">{{meat.time | formatDate}}</div>
                   <div class="meatStatusDrop">
-                    <el-dropdown v-if="meat.status === 1">
+                    <el-dropdown v-if="meat.status === 1"  trigger="click" @command="handleCommand">
                       <img src="../assets/pic/dish.png" style="width: 40px">
                       <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item>吃到了</el-dropdown-item>
-                      <el-dropdown-item>下次一定</el-dropdown-item>
+                      <el-dropdown-item command="2">吃到了</el-dropdown-item>
+                      <el-dropdown-item command="3">下次一定</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
@@ -69,6 +69,13 @@
             </span>
         </el-form-item>
       </el-form>
+    </el-dialog>
+    <el-dialog title="吃了吗" :visible.sync="visibleCreate" custom-class="swan-dialog"
+               top="200px"
+               :modal="false"
+               :destroy-on-close="true"
+    >
+
     </el-dialog>
   </div>
 </template>
@@ -120,6 +127,27 @@ export default {
     }
   },
   methods: {
+    handleCommand (command) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.axios.post('meat/status').then(res => {
+
+        })
+
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     dialogCreate () {
       this.visibleCreate = true
     },
@@ -250,5 +278,12 @@ export default {
 </script>
 
 <style scoped>
+  .el-dropdown-menu__item {
+    font-size: 20px;
 
+  }
+  .el-dropdown-menu__item:focus {
+    background-color: #e6f2f2;
+    /* color: #339999; */
+  }
 </style>
