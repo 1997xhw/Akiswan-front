@@ -57,6 +57,7 @@
       </el-main>
     </el-container>
     <div>
+      <!--登陆-->
       <el-dialog title="Log in" custom-class="swan-dialog"
                  :visible.sync="visibleSignIn"
                  :modal="false"
@@ -88,6 +89,7 @@
         </el-form>
       </el-dialog>
     </div>
+    <!--注册-->
     <el-dialog title="Sign up" :visible.sync="visibleSignUp" custom-class="swan-dialog"
                top="200px"
                :modal="false"
@@ -110,7 +112,7 @@
           <el-input v-model="upForm.phone" size="medium "></el-input>
           <el-input v-model="upForm.code" size="medium" placeholder="验证码" style="width: 40%"></el-input>
           <span class="Captcha-bt">
-            <el-button type="primary" @click="sentCaptcha">
+            <el-button type="primary" @click="sentCaptcha" :disabled="!capButtonShow">
               <span v-show="capButtonShow">验证码</span>
               <span v-show="!capButtonShow">{{count}} s</span>
             </el-button>
@@ -291,7 +293,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           // alert('submit!')
-          console.log(this.validRegResult.length === 0)
+          console.log(this.validRegResult)
           if (this.validRegResult.length !== 0) {
             // this.axiosValidate('create')
             this.goSignup()
@@ -323,8 +325,8 @@ export default {
           captchaObj.onReady(() => {
             captchaObj.verify()
           }).onSuccess(() => {
-            this.validResult = captchaObj.getValidate()
-            console.log(this.validResult)
+            this.validRegResult = captchaObj.getValidate()
+            console.log(this.validRegResult)
             this.axiosValidate('create')
           }).onError(() => {
           })
@@ -370,7 +372,13 @@ export default {
     },
     axiosValidate (type) {
       // eslint-disable-next-line no-undef
-      this.axios.post('base/geetest/axiosvalidate', this.validResult).then(res => {
+      var param = []
+      if (type === 'create') {
+        param = this.validRegResult
+      } else {
+        param = this.validResult
+      }
+      this.axios.post('base/geetest/axiosvalidate', param).then(res => {
         this.geetestStatus = res.data.status
         if (this.geetestStatus) {
           if (type === 'login') { this.goLogin() } else if (type === 'create') { this.registerCaptchaPhone() }
@@ -395,8 +403,8 @@ export default {
           this.signin()
         } else {
           this.$notify({
-            title: '失败',
-            message: '注册失败',
+            title: '错误',
+            message: response.data.msg,
             type: 'error'
           })
         }

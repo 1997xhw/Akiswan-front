@@ -18,11 +18,11 @@
                   <div class="statuss">{{meatStatus(meat.status)}}</div>
                   <div class="target">{{meat.time | formatDate}}</div>
                   <div class="meatStatusDrop">
-                    <el-dropdown v-if="meat.status === 1"  trigger="click" @command="handleCommand">
+                    <el-dropdown v-if="meat.status === 1"  trigger="click" >
                       <img src="../assets/pic/dish.png" style="width: 40px">
                       <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item command="2">吃到了</el-dropdown-item>
-                      <el-dropdown-item command="3">下次一定</el-dropdown-item>
+                      <el-dropdown-item  @click.native="handleStatus(meat.mid, 2)">吃到了</el-dropdown-item>
+                      <el-dropdown-item  @click.native="handleStatus(meat.mid, 3)">下次一定</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
@@ -127,24 +127,38 @@ export default {
     }
   },
   methods: {
-    handleCommand (command) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+    handleStatus (mid, status) {
+      this.$confirm('长官即将确认状态且无法逆转, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.axios.post('meat/status').then(res => {
-
-        })
-
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+        const param = {
+          mid: mid,
+          status: status
+        }
+        this.axios.post('meat/status', param).then(res => {
+          console.log(res)
+          if (res.data.msg === 'OK') {
+            this.$notify({
+              title: '成功',
+              message: '确认成功！',
+              type: 'success'
+            })
+            this.getMeatList()
+          } else {
+            this.$notify({
+              title: '出现了一些小问题',
+              message: res.data.msg + ' ' + res.data.identifier,
+              type: 'error'
+            })
+          }
         })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
+        this.$notify({
+          title: '',
+          message: '已终止确认',
+          type: 'info'
         })
       })
     },
