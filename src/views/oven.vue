@@ -70,13 +70,13 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog title="吃了吗" :visible.sync="visibleCreate" custom-class="swan-dialog"
-               top="200px"
-               :modal="false"
-               :destroy-on-close="true"
-    >
+<!--    <el-dialog title="吃了吗" :visible.sync="visibleCreate" custom-class="swan-dialog"-->
+<!--               top="200px"-->
+<!--               :modal="false"-->
+<!--               :destroy-on-close="true"-->
+<!--    >-->
 
-    </el-dialog>
+<!--    </el-dialog>-->
   </div>
 </template>
 
