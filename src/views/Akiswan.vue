@@ -15,6 +15,7 @@
   .el-icon-arrow-down {
     font-size: 12px;
   }
+
   .geetest_holder.geetest_wind {
     min-width: 200px;
   }
@@ -71,11 +72,11 @@
           <el-form-item label="Password" prop="password">
             <el-input type="password" v-model="inForm.password"></el-input>
           </el-form-item>
-          <el-form-item >
+          <el-form-item>
             <div class="capBox">
               <div id="captchaBox" style="min-width: 200px"></div>
             </div>
-<!--            <p id="wait" class="show">正在加载验证码....</p>-->
+            <!--            <p id="wait" class="show">正在加载验证码....</p>-->
           </el-form-item>
           <el-form-item class="submit-bt">
             <span class="login-bt">
@@ -279,7 +280,8 @@ export default {
           // alert('submit!')
           console.log(this.validResult)
           if (this.validResult.length !== 0) {
-            this.axiosValidate('login')
+            // this.axiosValidate('login')
+            this.goLogin()
           } else {
             return alert('请完成验证')
           }
@@ -327,7 +329,8 @@ export default {
           }).onSuccess(() => {
             this.validRegResult = captchaObj.getValidate()
             console.log(this.validRegResult)
-            this.axiosValidate('create')
+            // this.axiosValidate('create')
+            this.registerCaptchaPhone()
           }).onError(() => {
           })
         })
@@ -372,23 +375,11 @@ export default {
     },
     axiosValidate (type) {
       // eslint-disable-next-line no-undef
-      var param = []
-      if (type === 'create') {
-        param = this.validRegResult
-      } else {
-        param = this.validResult
+      if (type === 'login') {
+        this.goLogin()
+      } else if (type === 'create') {
+        this.registerCaptchaPhone()
       }
-      this.axios.post('base/geetest/axiosvalidate', param).then(res => {
-        this.geetestStatus = res.data.status
-        if (this.geetestStatus) {
-          if (type === 'login') { this.goLogin() } else if (type === 'create') { this.registerCaptchaPhone() }
-        } else {
-          this.$notify.error({
-            title: 'error',
-            message: '验证错误稍后再试'
-          })
-        }
-      })
     },
     goSignup () {
       console.log(this.upForm)
@@ -412,7 +403,15 @@ export default {
     },
     goLogin () {
       console.log(this.inForm)
-      this.axios.post('user/token', this.inForm).then((response) => {
+      const param = {
+        geetest_challenge: this.validResult.geetest_challenge,
+        geetest_seccode: this.validResult.geetest_seccode,
+        geetest_validate: this.validResult.geetest_validate,
+        username: this.inForm.username,
+        password: this.inForm.password
+      }
+      console.log(param)
+      this.axios.post('user/token', param).then((response) => {
         console.log(response)
         if (response.data.msg === 'OK') {
           this.$notify({
@@ -433,6 +432,12 @@ export default {
               // message: response.data.msg
               message: '密码错误,请重试'
             })
+          } else if (response.data.identifier === 'GEETEST_VALIDATE') {
+            this.$notify.error({
+              title: '错误',
+              // message: response.data.msg
+              message: '极验验证错误，请稍后再试'
+            })
           } else {
             this.$notify.error({
               title: '错误',
@@ -448,6 +453,9 @@ export default {
     registerCaptchaPhone () {
       // eslint-disable-next-line no-unused-vars
       const phoneReg = {
+        geetest_challenge: this.validRegResult.geetest_challenge,
+        geetest_seccode: this.validRegResult.geetest_seccode,
+        geetest_validate: this.validRegResult.geetest_validate,
         phone: this.upForm.phone
       }
       this.axios.post('user/registerCaptcha', phoneReg).then((res) => {
